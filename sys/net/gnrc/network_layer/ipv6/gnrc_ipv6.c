@@ -49,6 +49,9 @@
 
 #define _MAX_L2_ADDR_LEN    (8U)
 
+#define _MASK_ADDR_STATE_VALID (GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID | \
+    GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_DEPRECATED)
+
 static char _stack[GNRC_IPV6_STACK_SIZE + DEBUG_EXTRA_STACKSIZE];
 static msg_t _msg_q[GNRC_IPV6_MSG_QUEUE_SIZE];
 
@@ -391,9 +394,9 @@ static int _fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *ipv6)
         int idx;
 
         gnrc_netif_acquire(netif);
-        invalid_src = ((!ipv6_addr_is_loopback(&hdr->dst)) &&
-                       (idx = gnrc_netif_ipv6_addr_idx(netif, &hdr->src)) >= 0) &&
-            (gnrc_netif_ipv6_addr_get_state(netif, idx) != GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID);
+        invalid_src = !ipv6_addr_is_loopback(&hdr->dst) &&
+            (((idx = gnrc_netif_ipv6_addr_idx(netif, &hdr->src)) == -1) ||
+                ((gnrc_netif_ipv6_addr_get_state(netif, idx) & _MASK_ADDR_STATE_VALID) == 0));
         gnrc_netif_release(netif);
         if (invalid_src) {
 #if IS_ACTIVE(CONFIG_GNRC_IPV6_NIB_6LN)
