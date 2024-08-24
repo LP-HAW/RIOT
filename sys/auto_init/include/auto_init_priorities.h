@@ -395,6 +395,18 @@ extern "C" {
  */
 #define AUTO_INIT_PRIO_MOD_DRIVER_CRYPTOCELL_310            1570
 #endif
+#ifndef AUTO_INIT_PRIO_MOD_PSA_CRYPTOSERVICE_SE
+/**
+ * @brief PSA Crypto Service Priority
+ */
+#define AUTO_INIT_PRIO_MOD_PSA_CRYPTOSERVICE_SE         1580
+#endif
+#ifndef AUTO_INIT_PRIO_MOD_CRYPTOSERVICE_PLATFORM_KEY
+/**
+ * @brief PSA Crypto Service Platform Key Priority
+ */
+#define AUTO_INIT_PRIO_MOD_CRYPTOSERVICE_PLATFORM_KEY   1590
+#endif
 
 #ifdef __cplusplus
 }

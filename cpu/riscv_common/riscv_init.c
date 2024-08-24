@@ -36,18 +36,8 @@ void riscv_puf_sram_init(void)
 }
 #endif /* MODULE_PUF_SRAM */
 
-void riscv_fpu_init(void)
-{
-    /* Enable FPU if present */
-    if (read_csr(misa) & (1 << ('F' - 'A'))) {
-        write_csr(mstatus, MSTATUS_FS); /* allow FPU instructions without trapping */
-        write_csr(fcsr, 0);             /* initialize rounding mode, undefined at reset */
-    }
-}
-
 void riscv_init(void)
 {
-    riscv_fpu_init();
     riscv_irq_init();
 #ifdef MODULE_PMP_NOEXEC_RAM
     /* This marks the (main) RAM region as non

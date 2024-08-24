@@ -113,7 +113,8 @@ struct psa_cipher_operation_s {
     /** Union containing cipher contexts for the executing backend */
     union cipher_context {
         psa_cipher_context_t cipher_ctx;    /**< Cipher context */
-#if IS_USED(MODULE_PSA_SECURE_ELEMENT_ATECCX08A) || defined(DOXYGEN)
+#if IS_USED(MODULE_PSA_SECURE_ELEMENT_ATECCX08A) || \
+    IS_USED(MODULE_PSA_SECURE_ELEMENT_CRYPTOSERVICE) || defined(DOXYGEN)
         psa_se_cipher_context_t se_ctx;     /**< SE Cipher context */
 #endif
     } backend_ctx;  /**< Backend specific cipher context */

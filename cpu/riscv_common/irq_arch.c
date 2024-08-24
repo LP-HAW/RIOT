@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+#include "kernel_defines.h"
 #include "macros/xtstr.h"
 #include "cpu.h"
 #include "context_frame.h"
@@ -84,18 +85,18 @@ void riscv_irq_init(void)
  * @brief Global trap and interrupt handler
  */
 __attribute((used))
-static void handle_trap(uword_t mcause)
+static void handle_trap(uword_t cause)
 {
     /*  Tell RIOT to set sched_context_switch_request instead of
      *  calling thread_yield(). */
     riscv_in_isr = 1;
 
-    uword_t trap = mcause & CPU_CSR_MCAUSE_CAUSE_MSK;
+    uword_t trap = cause & CPU_CSR_MCAUSE_CAUSE_MSK;
 
     /* Check for INT or TRAP */
-    if ((mcause & MCAUSE_INT) == MCAUSE_INT) {
+    if ((cause & MCAUSE_INT) == MCAUSE_INT) {
         /* Cause is an interrupt - determine type */
-        switch (mcause & MCAUSE_CAUSE) {
+        switch (cause & MCAUSE_CAUSE) {
 
 #ifdef MODULE_PERIPH_CORETIMER
         case IRQ_M_TIMER:
@@ -194,7 +195,12 @@ static void __attribute__((interrupt)) trap_entry(void)
         "la sp, _sp                                         \n"
 
         /* Get the interrupt cause */
+#if IS_USED(MODULE_RISCV_UMODE)
+        "la a0, uapi_csr                                    \n"
+        "lw a0, "XTSTR(o_ucause)"(a0)                       \n"
+#else
         "csrr a0, mcause                                    \n"
+#endif
 
         /* Call trap handler, a0 contains mcause before, and the return value after
          * the call */
@@ -238,7 +244,12 @@ static void __attribute__((interrupt)) trap_entry(void)
         "sw s11, "XTSTR (s11_OFFSET)"(sp)                    \n"
 
         /* Grab mepc to save it to the stack */
+#if IS_USED(MODULE_RISCV_UMODE)
+        "la s2, uapi_csr                                    \n"
+        "lw s2, "XTSTR(o_uepc)"(s2)                         \n"
+#else
         "csrr s2, mepc                                      \n"
+#endif
 
         /* Save return PC in stack frame */
         "sw s2, "XTSTR (pc_OFFSET)"(sp)                      \n"
@@ -257,7 +268,12 @@ static void __attribute__((interrupt)) trap_entry(void)
 
         /*  Set return PC to mepc */
         "lw a1, "XTSTR (pc_OFFSET)"(sp)                      \n"
+#if IS_USED(MODULE_RISCV_UMODE)
+        "la s3, uapi_csr                                    \n"
+        "sw a1, "XTSTR(o_uepc)"(s3)                         \n"
+#else
         "csrw mepc, a1                                      \n"
+#endif
 
         /* restore s2-s11 */
         "lw s2, "XTSTR (s2_OFFSET)"(sp)                      \n"

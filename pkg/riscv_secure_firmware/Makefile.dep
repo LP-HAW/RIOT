@@ -1,0 +1,2 @@
+# enable user-mode in cpu/riscv_common
+USEMODULE += riscv_umode

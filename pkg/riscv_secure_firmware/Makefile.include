@@ -1,0 +1,19 @@
+PKG_NAME = riscv_secure_firmware
+PKG_BUILD_DIR = $(BINDIR)/pkg-build/$(PKG_NAME)
+
+INCLUDES += -I$(PKG_BUILD_DIR)/bin/include
+INCLUDES += -I$(RIOTPKG)/riscv_secure_firmware/include
+
+LINKFLAGS += -L$(PKG_BUILD_DIR)/bin/ld
+LINKFLAGS += -L$(RIOTPKG)/riscv_secure_firmware/ldscript
+LINKER_SCRIPT = riscv_secure_firmware.ld
+
+FLASHDEPS += flash-bootloader
+
+ifneq (,$(filter cryptoservice,$(USEPKG)))
+  USEMODULE += cryptoservice_stubs
+endif
+
+ifneq (,$(filter cryptoservice_platform_key,$(USEMODULE)))
+  DIRS += $(RIOTPKG)/riscv_secure_firmware/contrib
+endif

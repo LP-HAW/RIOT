@@ -37,11 +37,6 @@ extern "C" {
 void riscv_init(void);
 
 /**
- * @brief   Enable the rv32i FPU when present
- */
-void riscv_fpu_init(void);
-
-/**
  * @brief   Initialization of the interrupt controller
  */
 void riscv_irq_init(void);

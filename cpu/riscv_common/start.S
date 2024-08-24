@@ -17,7 +17,9 @@ _start:
     .cfi_undefined ra
 .option push
 .option norelax
+#ifndef MODULE_RISCV_UMODE
     csrc CSR_MSTATUS, MSTATUS_MIE
+#endif
     lui a0, %hi(_start_real)
     jalr x0, a0, %lo(_start_real)
 

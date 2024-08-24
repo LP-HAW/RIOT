@@ -1,0 +1,3 @@
+MODULE = cryptoservice_stubs
+
+include $(RIOTBASE)/Makefile.base

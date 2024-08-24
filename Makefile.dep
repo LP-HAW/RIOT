@@ -104,6 +104,10 @@ ifneq (,$(filter tinyusb_%, $(USEMODULE)))
   USEPKG += tinyusb
 endif
 
+ifneq (,$(filter riscv_umode,$(USEMODULE)))
+  USEPKG += riscv_secure_firmware
+endif
+
 # always select gpio (until explicit dependencies are sorted out)
 FEATURES_OPTIONAL += periph_gpio
 

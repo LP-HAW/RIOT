@@ -227,6 +227,10 @@
 #define rdcycle() read_csr(cycle)
 #define rdinstret() read_csr(instret)
 
+#ifdef MODULE_RISCV_UMODE
+#include "riscv_csr_overrides.h"
+#endif
+
 #endif
 
 #endif

@@ -25,8 +25,14 @@
 
 #include <stdint.h>
 
+#include "kernel_defines.h"
 #include "irq.h"
 #include "vendor/riscv_csr.h"
+
+#if IS_USED(MODULE_RISCV_UMODE)
+#include "uapi/ecall.h"
+#include "uapi/interrupt.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +50,10 @@ extern volatile int riscv_in_isr;
  */
 static inline __attribute__((always_inline)) unsigned int irq_enable(void)
 {
+#if IS_USED(MODULE_RISCV_UMODE)
+    return _ecall1(ECALL_CSRRW_UIE, uapi_csr.uie);
+#endif
+
     /* Enable all interrupts */
     unsigned state;
 
@@ -61,6 +71,9 @@ static inline __attribute__((always_inline)) unsigned int irq_enable(void)
  */
 static inline __attribute__((always_inline)) unsigned int irq_disable(void)
 {
+#if IS_USED(MODULE_RISCV_UMODE)
+    return _ecall1(ECALL_CSRRW_UIE, 0x0);
+#endif
 
     unsigned int state;
 
@@ -80,6 +93,13 @@ static inline __attribute__((always_inline)) unsigned int irq_disable(void)
 static inline __attribute__((always_inline)) void irq_restore(
     unsigned int state)
 {
+#if IS_USED(MODULE_RISCV_UMODE)
+    if(state) {
+        (void)_ecall1(ECALL_CSRRW_UIE, uapi_csr.uie);
+    }
+    return;
+#endif
+
     /* Restore all interrupts to given state */
     __asm__ volatile (
         "csrw mstatus, %[state]"
@@ -99,6 +119,12 @@ static inline __attribute__((always_inline)) bool irq_is_in(void)
 
 static inline __attribute__((always_inline)) bool irq_is_enabled(void)
 {
+#if IS_USED(MODULE_RISCV_UMODE)
+    unsigned tmp = _ecall1(ECALL_CSRRW_UIE, 0x0);
+    (void)_ecall1(ECALL_CSRRW_UIE, tmp);
+    return tmp;
+#endif
+
     unsigned state;
 
     __asm__ volatile (

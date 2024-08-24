@@ -1072,6 +1072,9 @@ CFLAGS += -include '$(RIOTBUILD_CONFIG_HEADER_C)'
 # include mcuboot support
 include $(RIOTMAKE)/mcuboot.mk
 
+# include RISC-V Secure Firmware support
+include $(RIOTMAKE)/riscv_secure_firmware.mk
+
 # include Murdock helpers
 include $(RIOTMAKE)/murdock.inc.mk
 

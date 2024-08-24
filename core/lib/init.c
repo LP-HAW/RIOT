@@ -45,8 +45,8 @@
 
 extern int main(void);
 
-static char main_stack[THREAD_STACKSIZE_MAIN];
-static char idle_stack[THREAD_STACKSIZE_IDLE];
+static char main_stack[THREAD_STACKSIZE_MAIN] __attribute__((aligned(4)));
+static char idle_stack[THREAD_STACKSIZE_IDLE] __attribute__((aligned(4)));
 
 static void *main_trampoline(void *arg)
 {

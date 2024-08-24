@@ -20,7 +20,12 @@
 #ifndef THREAD_ARCH_H
 #define THREAD_ARCH_H
 
+#include "kernel_defines.h"
 #include "irq.h"
+
+#if IS_USED(MODULE_RISCV_UMODE)
+#include "uapi/ecall.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +54,11 @@ static inline __attribute__((always_inline)) void thread_yield_higher(void)
         sched_context_switch_request = 1;
     }
     else {
+#if IS_USED(MODULE_RISCV_UMODE)
+        (void)_ecall0(ECALL_UCALL);
+#else
         _ecall_dispatch(0, NULL);
+#endif
     }
 }
 
